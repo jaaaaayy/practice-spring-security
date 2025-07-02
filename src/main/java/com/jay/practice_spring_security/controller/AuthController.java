@@ -1,7 +1,6 @@
 package com.jay.practice_spring_security.controller;
 
 import com.jay.practice_spring_security.model.User;
-import com.jay.practice_spring_security.repository.UserRepository;
 import com.jay.practice_spring_security.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +25,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public String login(@RequestBody User user) {
-        return "";
+        return authService.login(user);
     }
 }

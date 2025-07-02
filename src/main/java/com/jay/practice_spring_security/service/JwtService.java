@@ -1,10 +1,12 @@
 package com.jay.practice_spring_security.service;
 
 import com.jay.practice_spring_security.model.User;
+import com.jay.practice_spring_security.repository.BlacklistedTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +18,13 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
+    private final BlacklistedTokenRepository blacklistedTokenRepository;
     private String secretKey = null;
+
+    @Autowired
+    public JwtService(BlacklistedTokenRepository blacklistedTokenRepository) {
+        this.blacklistedTokenRepository = blacklistedTokenRepository;
+    }
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
@@ -65,14 +73,18 @@ public class JwtService {
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
 
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token) && !isTokenBlacklisted(token);
     }
 
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    private Date extractExpiration(String token) {
+    public Date extractExpiration(String token) {
         return extractClaims(token, Claims::getExpiration);
+    }
+
+    public Boolean isTokenBlacklisted(String token) {
+        return blacklistedTokenRepository.findByToken(token).isPresent();
     }
 }

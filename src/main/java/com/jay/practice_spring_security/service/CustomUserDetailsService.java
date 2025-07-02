@@ -2,7 +2,7 @@ package com.jay.practice_spring_security.service;
 
 import com.jay.practice_spring_security.model.User;
 import com.jay.practice_spring_security.repository.UserRepository;
-import com.jay.practice_spring_security.security.CustomUserDetails;
+import com.jay.practice_spring_security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

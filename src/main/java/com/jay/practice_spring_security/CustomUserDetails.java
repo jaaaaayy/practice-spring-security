@@ -1,4 +1,4 @@
-package com.jay.practice_spring_security.security;
+package com.jay.practice_spring_security;
 
 import com.jay.practice_spring_security.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
     private final User user;

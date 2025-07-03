@@ -1,5 +1,8 @@
 package com.jay.practice_spring_security.service;
 
+import com.jay.practice_spring_security.dto.auth.RegisterDto;
+import com.jay.practice_spring_security.dto.user.UserResponseDto;
+import com.jay.practice_spring_security.exception.DuplicateResourceException;
 import com.jay.practice_spring_security.model.BlacklistedToken;
 import com.jay.practice_spring_security.model.User;
 import com.jay.practice_spring_security.repository.BlacklistedTokenRepository;
@@ -13,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class AuthService {
@@ -31,9 +36,28 @@ public class AuthService {
         this.blacklistedTokenRepository = blacklistedTokenRepository;
     }
 
-    public User register(User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public UserResponseDto register(RegisterDto registerDto) {
+        Map<String, String> errors = new HashMap<>();
+
+        if (userRepository.findByUsername(registerDto.getUsername()).isPresent()) {
+            errors.put("username", "Username already taken");
+        }
+
+        if (userRepository.findByEmail(registerDto.getEmail()).isPresent()) {
+            errors.put("email", "Email already exists");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new DuplicateResourceException(errors);
+        }
+
+        User user = new User();
+        user.setUsername(registerDto.getUsername());
+        user.setEmail(registerDto.getEmail());
+        user.setPassword(bCryptPasswordEncoder.encode(registerDto.getPassword()));
+
+        User newUser = userRepository.save(user);
+        return new UserResponseDto(newUser);
     }
 
     public String login(User user) {

@@ -1,4 +1,4 @@
-package com.jay.practice_spring_security.dto;
+package com.jay.practice_spring_security.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,5 +1,7 @@
 package com.jay.practice_spring_security.service;
 
+import com.jay.practice_spring_security.CustomUserDetails;
+import com.jay.practice_spring_security.dto.auth.LoginDto;
 import com.jay.practice_spring_security.dto.auth.RegisterDto;
 import com.jay.practice_spring_security.dto.user.UserResponseDto;
 import com.jay.practice_spring_security.exception.DuplicateResourceException;
@@ -60,14 +62,18 @@ public class AuthService {
         return new UserResponseDto(newUser);
     }
 
-    public String login(User user) {
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+    public Map<String, Object> login(LoginDto loginDto) {
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
 
-        if (authenticate.isAuthenticated()) {
-            return jwtService.generateToken(user);
-        }
+        CustomUserDetails userDetails = (CustomUserDetails) authenticate.getPrincipal();
+        UserResponseDto user = new UserResponseDto(userDetails.getUser());
+        String token = jwtService.generateToken(loginDto);
 
-        return "Login successful";
+        Map<String, Object> loginData = new HashMap<>();
+        loginData.put("user", user);
+        loginData.put("token", token);
+        
+        return loginData;
     }
 
     public String logout(String token) {

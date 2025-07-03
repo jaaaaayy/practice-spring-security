@@ -1,5 +1,6 @@
 package com.jay.practice_spring_security.service;
 
+import com.jay.practice_spring_security.dto.auth.LoginDto;
 import com.jay.practice_spring_security.model.User;
 import com.jay.practice_spring_security.repository.BlacklistedTokenRepository;
 import io.jsonwebtoken.Claims;
@@ -26,14 +27,14 @@ public class JwtService {
         this.blacklistedTokenRepository = blacklistedTokenRepository;
     }
 
-    public String generateToken(User user) {
+    public String generateToken(LoginDto loginDto) {
         Map<String, Object> claims = new HashMap<>();
 
         return Jwts
                 .builder()
                 .claims()
                 .add(claims)
-                .subject(user.getUsername())
+                .subject(loginDto.getUsername())
                 .issuer("Jay")
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000L))

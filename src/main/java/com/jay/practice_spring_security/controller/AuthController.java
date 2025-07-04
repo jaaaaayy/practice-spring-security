@@ -45,7 +45,7 @@ public class AuthController {
     public ResponseEntity<ResponseDto<String>> logout(@RequestHeader(value = "Authorization", required = false) String token) {
         authService.logout(token);
 
-        ResponseDto<String> response = ResponseDto.success("Logout successful", null);
+        ResponseDto<String> response = ResponseDto.success("Logout successful");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -5,6 +5,7 @@ import com.jay.practice_spring_security.dto.auth.LoginDto;
 import com.jay.practice_spring_security.dto.auth.RegisterDto;
 import com.jay.practice_spring_security.dto.user.UserResponseDto;
 import com.jay.practice_spring_security.exception.DuplicateResourceException;
+import com.jay.practice_spring_security.exception.InvalidTokenException;
 import com.jay.practice_spring_security.model.BlacklistedToken;
 import com.jay.practice_spring_security.model.User;
 import com.jay.practice_spring_security.repository.BlacklistedTokenRepository;
@@ -76,9 +77,9 @@ public class AuthService {
         return loginData;
     }
 
-    public String logout(String token) {
+    public void logout(String token) {
         if (token == null || token.isEmpty()) {
-            return "Token is required";
+            throw new InvalidTokenException("Token is required");
         }
 
         if (token.startsWith("Bearer ")) {
@@ -86,7 +87,7 @@ public class AuthService {
         }
 
         if (jwtService.isTokenBlacklisted(token)) {
-            return "Token is already blacklisted";
+            throw new InvalidTokenException("Token is already blacklisted");
         }
 
         Date expirationDate = jwtService.extractExpiration(token);
@@ -96,7 +97,5 @@ public class AuthService {
         blacklistedToken.setToken(token);
         blacklistedToken.setExpiresAt(expiresAt);
         blacklistedTokenRepository.save(blacklistedToken);
-
-        return "Logout sucessful";
     }
 }

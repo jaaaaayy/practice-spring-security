@@ -30,4 +30,10 @@ public class GlobalExceptionHandler {
         ResponseDto<String> response = ResponseDto.error("Incorrect username or password");
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
-} 
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ResponseDto<String>> handleInvalidTokenException(InvalidTokenException invalidTokenException) {
+        ResponseDto<String> response = ResponseDto.error(invalidTokenException.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+}

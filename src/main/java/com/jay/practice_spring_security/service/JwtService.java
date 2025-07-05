@@ -1,13 +1,13 @@
 package com.jay.practice_spring_security.service;
 
 import com.jay.practice_spring_security.dto.auth.LoginDto;
-import com.jay.practice_spring_security.model.User;
 import com.jay.practice_spring_security.repository.BlacklistedTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,12 @@ import java.util.function.Function;
 @Service
 public class JwtService {
     private final BlacklistedTokenRepository blacklistedTokenRepository;
-    private String secretKey = null;
+
+    @Value("${jwt.secret.key}")
+    private String secretKey;
+
+    @Value("${jwt.expiration}")
+    private Long expiration;
 
     @Autowired
     public JwtService(BlacklistedTokenRepository blacklistedTokenRepository) {
@@ -37,7 +42,7 @@ public class JwtService {
                 .subject(loginDto.getUsername())
                 .issuer("Jay")
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000L))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
                 .and()
                 .signWith(generateKey())
                 .compact();
@@ -50,7 +55,7 @@ public class JwtService {
     }
 
     public String getSecretKey() {
-        return "d7e9349f3fb140b0d4be306e9f2b35fa4c4113384e4bb9077cd992388937bfe0";
+        return secretKey;
     }
 
     public String extractUsername(String token) {
